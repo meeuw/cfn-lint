@@ -10,7 +10,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository == 'aws-cloudformation/cfn-lint'
+    #if: github.repository == 'aws-cloudformation/cfn-lint'
+    if: github.repository == 'meeuw/cfn-lint'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -20,6 +21,9 @@ jobs:
           python-version: "3.13"
       - name: Build
         run: |
+          pip install --upgrade pip
+          pip install --upgrade setuptools build wheel twine
+          python -m build
           pip install -e .
           scripts/release/generator.py
           scripts/release/changelog.py --version ${{ github.ref_name }}
@@ -33,3 +37,5 @@ jobs:
           files: |
             build/schemas-cfnlint.zip
             build/schemas-draft7.zip
+            dist/cfn_lint-${{ github.ref_name }}.tar.gz
+            dist/cfn_lint-${{ github.ref_name }}-py3-none-any.whl
